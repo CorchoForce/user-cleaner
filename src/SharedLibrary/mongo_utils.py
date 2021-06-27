@@ -81,17 +81,23 @@ def get_all_invalid_users(collection: pymongo.collection.Collection) -> list:
         return None
 
 
-def delete_invalid_users(collection: pymongo.collection.Collection) -> None:
+def delete_invalid_users(collection: pymongo.collection.Collection) -> int:
     """ Delete all the users that the created time is bigger than 7 days and are not valid
     Args:
         collection (Collection): collection object to delete the invalid users
+    Returns:
+        int: the number of deleted users.
     """
+    deleted_users = 0
     users = get_all_invalid_users(collection)
     for user in users:
         created_date = user.get(
             "createdAt", datetime.strptime('2021/01/01', '%Y/%m/%d'))
         if ((datetime.now() - created_date).days >= 7):
             delete_document_on_mongo(collection, {"_id": user["_id"]})
+            deleted_users += 1
+
+    return deleted_users
 
 
 def access_collection(parameters: dict) -> tuple:
