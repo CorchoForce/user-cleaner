@@ -1,5 +1,4 @@
 from os import getenv
-from dotenv import load_dotenv, find_dotenv
 
 
 def load_parameters() -> dict:
@@ -8,11 +7,11 @@ def load_parameters() -> dict:
         dict: an object with the .env informations.
     """
     try:
-        return {"connection_url": getenv("CONNECTION_URL"),
-                "username": getenv("USERNAME"),
-                "password": getenv("PASSWORD"),
-                "database": getenv("DATABASE"),
-                "collection": getenv("COLLECTION"),
-                "port": int(getenv("PORT"))}
+        return {"username": getenv("MONGO_USERNAME"),
+                "password": getenv("MONGO_PASSWORD"),
+                "database": getenv("MONGO_DATABASE"),
+                "collection": getenv("MONGO_COLLECTION"),
+                "port": int(getenv("MONGO_PORT")),
+                "host": getenv("MONGO_HOSTNAME")}
     except:
         return None
