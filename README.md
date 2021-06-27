@@ -2,7 +2,7 @@
 
 <a href="https://codeclimate.com/github/CorchoForce/user-cleaner/maintainability"><img src="https://api.codeclimate.com/v1/badges/4d557edf5762792e521e/maintainability" /></a>
 
-![demonstration](https://cdn.discordapp.com/attachments/539836343094870016/858756519813840897/unknown.png)
+![demonstration](https://cdn.discordapp.com/attachments/539836343094870016/858766809628409866/unknown.png)
 
 ## Table of Contents
 
