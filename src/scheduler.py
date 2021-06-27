@@ -11,7 +11,7 @@ HOUR = os.getenv('SCHEDULE_TIME_HOUR')
 MONGO_PARAMETERS = load_parameters()
 
 
-@SCHEDULER.scheduled_job(IntervalTrigger(hours=HOUR))
+@SCHEDULER.scheduled_job(IntervalTrigger(hours=int(HOUR)))
 def users_cron():
     failed, collection = access_collection(MONGO_PARAMETERS)
     if failed:
