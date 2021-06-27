@@ -66,7 +66,32 @@ def delete_document_on_mongo(collection, query):
         return False
 
 
-def access_collection(parameters):
+def get_all_invalid_users(collection: pymongo.collection.Collection) -> list:
+    """ Gets a list of existing ThesisId on Mongo
+    Args:
+        collection (pymongo.collection.Collection): collection object to get the invalid users
+    Returns:
+        list: the list of ThesisId
+    """
+    try:
+        return list(collection.find({"verified": False}))
+    except:
+        return None
+
+
+def delete_invalid_users(collection: pymongo.collection.Collection) -> None:
+    """ Delete all the users that the created time is bigger than 7 days and are not valid
+    Args:
+        collection (Collection): collection object to delete the invalid users
+    """
+    users = get_all_invalid_users(collection)
+    for user in users:
+        created_date = user.get(
+            "createdAt", datetime.strptime('2021/01/01', '%Y/%m/%d'))
+        if ((datetime.now() - created_date).days >= 7):
+            delete_document_on_mongo(collection, {"_id": user["_id"]})
+
+
     """ Access the mongo 
     Args:
         parameters (dictionary): dictionary object to with the env parameters
