@@ -1,9 +1,10 @@
 import pymongo
+from datetime import datetime
 
-def connect_to_mongo(base_uri, user, password, database, port, host):
+
+def connect_to_mongo(user: str, password: str, database: str, port: int, host: str) -> pymongo.MongoClient:
     """ Connect to mongo using the Atlas uri
     Args:
-        base_uri (str): uri to be filled with the user informations
         user (str): user login
         password (str): user password
         database (str): database to connect
@@ -12,15 +13,16 @@ def connect_to_mongo(base_uri, user, password, database, port, host):
     Returns:
         MongoClient: the client to be used in the database/collection access
     """
+    base_uri = "mongodb+srv://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_HOSTNAME}/{MONGO_DB}"
     try:
         connection_string = base_uri.format(
-            MONGO_USERNAME=user, MONGO_PASSWORD=password, MONGO_DB=database, MONGO_HOSTNAME=host)
+            MONGO_USERNAME=user, MONGO_PASSWORD=password, MONGO_HOSTNAME=host, MONGO_DB=database)
         return pymongo.MongoClient(connection_string, port)
     except:
         return None
 
 
-def get_mongo_database(connection, database_name):
+def get_mongo_database(connection: pymongo.MongoClient, database_name: str) -> pymongo.database.Database:
     """ Access the database
     Args:
         connection (MongoClient): Mongo connection to the database
@@ -34,7 +36,7 @@ def get_mongo_database(connection, database_name):
         return None
 
 
-def get_mongo_collection(database, collection_name):
+def get_mongo_collection(database: pymongo.database.Database, collection_name: str) -> pymongo.collection.Collection:
     """ Access the collection
     Args:
         database (Database): Database that contains the collection_name
@@ -48,21 +50,21 @@ def get_mongo_collection(database, collection_name):
         return None
 
 
-def delete_document_on_mongo(collection, query):
-    """ Deletes multiple document to the collection
+def delete_document_on_mongo(collection: pymongo.collection.Collection, query: dict) -> bool:
+    """ Deletes one document to the collection
     Args:
-        collection (Collection): collection object to insert the document
+        collection (pymongo.collection.Collection): collection object to insert the document
         query (dictionary): Query used to find the object and delete it in the collection
     Returns:
         bool: True if document was deleted correctly
     """
     print("[Debug] Deleting document on mongo")
     try:
-        collection.delete_many(query)
-        print("[Debug] Document deleted")
+        collection.delete_one(query)
+        print("[Debug] User deleted")
         return True
     except:
-        print("[Warn] Couldn't delete the document")
+        print("[Warn] Couldn't delete the user")
         return False
 
 
@@ -92,18 +94,22 @@ def delete_invalid_users(collection: pymongo.collection.Collection) -> None:
             delete_document_on_mongo(collection, {"_id": user["_id"]})
 
 
+def access_collection(parameters: dict) -> tuple:
     """ Access the mongo 
     Args:
-        parameters (dictionary): dictionary object to with the env parameters
+        parameters (dict): dictionary object to with the env parameters
     Returns:
         tuple: the first element is a boolean (True if there's no error) and the second element is a collection object.
     """
     if (parameters is None):
         return (False, None)
 
-    client = connect_to_mongo(parameters["connection_url"], parameters["username"],
-                              parameters["password"], parameters["database"], parameters["port"])
+    client = connect_to_mongo(
+        parameters["username"], parameters["password"],
+        parameters["database"], parameters["port"],
+        parameters["host"]
+    )
     db = get_mongo_database(client, parameters["database"])
     collection = get_mongo_collection(db, parameters["collection"])
 
-    return (collection is not None, collection)
+    return (collection is None, collection)
