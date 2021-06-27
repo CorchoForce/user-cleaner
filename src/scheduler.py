@@ -16,8 +16,8 @@ def users_cron():
     failed, collection = access_collection(MONGO_PARAMETERS)
     if failed:
         raise Exception("Failed while trying to connect to mongo")
-    delete_invalid_users(collection)
-    print('dask train_model! The time is: %s' % datetime.now())
+    print(
+        f'[PAV Cron] Number of deleted users: {delete_invalid_users(collection)}. The current time is: %s' % datetime.now())
 
 
 SCHEDULER.start()
